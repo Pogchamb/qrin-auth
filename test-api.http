@@ -1,0 +1,39 @@
+### 1. Создать участника
+POST http://localhost:8080/api/participants
+Content-Type: application/json
+
+{
+  "fullName": "Mika Test"
+}
+
+### 2. Пройти через турникет (замени UUID)
+
+POST http://localhost:8080/api/auth/qr
+Content-Type: application/json
+
+{
+  "uuid": "07902197-190e-4ece-b018-53790dd50314"
+}
+
+### Получить участника по ID
+GET http://localhost:8080/api/participants/2
+
+### Изменить имя участнику
+PUT http://localhost:8080/api/participants/2
+Content-Type: application/json
+
+{
+  "fullName": "Tester Update"
+}
+
+### Удалить участника
+DELETE http://localhost:8080/api/participants/2
+
+### Посмотреть все QR-коды участника
+GET http://localhost:8080/api/participants/4/qr-codes
+
+### Выдать новый код участнику вручную
+POST http://localhost:8080/api/participants/4/qr-codes
+
+### Удалить конкретный QR-код
+DELETE http://localhost:8080/api/qr-codes/7
