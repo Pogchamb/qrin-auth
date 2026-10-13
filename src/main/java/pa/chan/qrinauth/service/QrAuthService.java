@@ -6,7 +6,6 @@ import pa.chan.qrinauth.dto.EntryResponseDto;
 import pa.chan.qrinauth.dto.QrCodeRequestDto;
 import pa.chan.qrinauth.entity.Participant;
 import pa.chan.qrinauth.entity.QrCode;
-import pa.chan.qrinauth.exceptions.InvalidQrCodeException;
 import pa.chan.qrinauth.repository.QrCodeRepository;
 
 @Service
