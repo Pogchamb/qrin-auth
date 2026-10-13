@@ -1,16 +1,17 @@
 package pa.chan.qrinauth.service;
 
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pa.chan.qrinauth.dto.ParticipantRequestDto;
 import pa.chan.qrinauth.dto.ParticipantResponseDto;
 import pa.chan.qrinauth.entity.Participant;
 import pa.chan.qrinauth.entity.QrCode;
-import pa.chan.qrinauth.exceptions.ResourceNotFoundException;
 import pa.chan.qrinauth.repository.ParticipantRepository;
 
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -24,7 +25,7 @@ public class ParticipantService {
 
     @Transactional
     public ParticipantResponseDto createParticipant(ParticipantRequestDto request) {
-        Participant participant = new Participant(request.fullName());
+        Participant participant = new Participant(request.firstName(), request.lastName());
 
         participant.addQrCode(new QrCode(UUID.randomUUID(), participant));
 
@@ -33,37 +34,41 @@ public class ParticipantService {
 
 
     @Transactional(readOnly = true)
-    public List<ParticipantResponseDto> getAllParticipants() {
-        return participantRepository.findAll().stream()
-                .map(this::toDto)
-                .toList();
+    public Page<ParticipantResponseDto> getAllParticipants(Pageable pageable) {
+        return participantRepository.findAll(pageable)
+                .map(this::toDto);
     }
 
     @Transactional(readOnly = true)
     public ParticipantResponseDto getParticipant(Long id) {
-        return toDto(findOrThrow(id));
+        return toDto(participantRepository.findByIdOrThrow(id));
     }
 
     @Transactional
     public ParticipantResponseDto updateParticipant(Long id, ParticipantRequestDto request) {
-        Participant participant = findOrThrow(id);
-        participant.setFullName(request.fullName());
+        Participant participant = participantRepository.findByIdOrThrow(id);
+        participant.setFirstName(request.firstName());
+        participant.setLastName(request.lastName());
         return toDto(participant);
     }
 
     @Transactional
     public void deleteParticipant(Long id) {
-        findOrThrow(id);
-        participantRepository.deleteById(id);
-    }
+        Participant participant = participantRepository.findByIdOrThrow(id);
+        LocalDateTime now = LocalDateTime.now();
 
-    private Participant findOrThrow(Long id) {
-        return participantRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Participant " + id + " not found"));
+        participant.setDeleted(true);
+        participant.setDeletedAt(now);
+
+        for (QrCode qrCode : participant.getQrCodes()) {
+            qrCode.setDeleted(true);
+            qrCode.setDeletedAt(now);
+            qrCode.setActive(false);
+        }
     }
 
     private ParticipantResponseDto toDto(Participant participant) {
-        return new ParticipantResponseDto(participant.getId(), participant.getFullName());
+        return new ParticipantResponseDto(participant.getId(), participant.getFirstName(), participant.getLastName());
     }
 
 }

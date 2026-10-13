@@ -5,7 +5,11 @@ import jakarta.validation.constraints.Size;
 
 public record ParticipantRequestDto(
         @NotBlank
-        @Size(max = 255, message = "fullName is too long")
-        String fullName
+        @Size(max = 255, message = "firstName is too long")
+        String firstName,
+
+        @NotBlank
+        @Size(max = 255, message = "lastName is too long")
+        String lastName
 ) {
 }

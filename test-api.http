@@ -1,39 +1,43 @@
 ### 1. Создать участника
-POST http://localhost:8080/api/participants
+POST http://localhost:8080/api/v1/participants
 Content-Type: application/json
 
 {
-  "fullName": "Mika Test"
+  "firstName": "Mika",
+  "lastName": "Test2"
 }
 
 ### 2. Пройти через турникет (замени UUID)
-
-POST http://localhost:8080/api/auth/qr
+POST http://localhost:8080/api/v1/auth/qr
 Content-Type: application/json
 
 {
-  "uuid": "07902197-190e-4ece-b018-53790dd50314"
+  "uuid": "31f9b836-967b-4d63-a0c2-65ec31be883f"
 }
+
+### Получить всех участников (с пагинацией)
+GET http://localhost:8080/api/v1/participants?page=0&size=20
 
 ### Получить участника по ID
-GET http://localhost:8080/api/participants/2
+GET http://localhost:8080/api/v1/participants/2
 
 ### Изменить имя участнику
-PUT http://localhost:8080/api/participants/2
+PUT http://localhost:8080/api/v1/participants/4
 Content-Type: application/json
 
 {
-  "fullName": "Tester Update"
+  "firstName": "Tester",
+  "lastName": "Update"
 }
 
-### Удалить участника
-DELETE http://localhost:8080/api/participants/2
+### Удалить участника (Soft Delete)
+DELETE http://localhost:8080/api/v1/participants/4
 
 ### Посмотреть все QR-коды участника
-GET http://localhost:8080/api/participants/4/qr-codes
+GET http://localhost:8080/api/v1/participants/2/qr-codes
 
 ### Выдать новый код участнику вручную
-POST http://localhost:8080/api/participants/4/qr-codes
+POST http://localhost:8080/api/v1/participants/2/qr-codes
 
 ### Удалить конкретный QR-код
-DELETE http://localhost:8080/api/qr-codes/7
+DELETE http://localhost:8080/api/v1/qr-codes/7

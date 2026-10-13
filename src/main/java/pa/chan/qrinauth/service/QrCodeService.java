@@ -26,7 +26,7 @@ public class QrCodeService {
 
     @Transactional(readOnly = true)
     public List<QrCodeResponseDto> getParticipantQrCodes(Long participantId) {
-        Participant participant = findOrThrow(participantId);
+        Participant participant = participantRepository.findByIdOrThrow(participantId);
 
         return participant.getQrCodes().stream()
                 .map(this::toDto)
@@ -35,7 +35,7 @@ public class QrCodeService {
 
     @Transactional
     public QrCodeResponseDto generateNewQrCode(Long participantId) {
-        Participant participant = findOrThrow(participantId);
+        Participant participant = participantRepository.findByIdOrThrow(participantId);
 
         participant.getQrCodes().forEach(qrCode -> qrCode.setActive(false));
 
@@ -56,11 +56,6 @@ public class QrCodeService {
             throw new ResourceNotFoundException("QrCode " + qrCodeId + " not found");
         }
         qrCodeRepository.deleteById(qrCodeId);
-    }
-
-    private Participant findOrThrow(Long id) {
-        return participantRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Participant " + id + " not found"));
     }
 
     private QrCodeResponseDto toDto(QrCode qrCode) {

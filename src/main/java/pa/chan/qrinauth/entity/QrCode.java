@@ -1,12 +1,14 @@
 package pa.chan.qrinauth.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.UUID;
 
 @Entity
 @Table(name = "qr_codes")
-public class QrCode {
+@SQLRestriction("is_deleted = false")
+public class QrCode extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

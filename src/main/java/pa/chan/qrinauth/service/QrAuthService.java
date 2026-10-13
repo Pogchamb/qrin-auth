@@ -21,17 +21,12 @@ public class QrAuthService {
 
     @Transactional
     public EntryResponseDto processEntry(QrCodeRequestDto request) {
-        int deactivated = qrCodeRepository.deactivateByUuid(request.uuid());
-        if (deactivated == 0) {
-            throw new InvalidQrCodeException("The QR code was not found or has already been used.");
-        }
-
-        QrCode usedQrCode = qrCodeRepository.findByUuid(request.uuid())
-                .orElseThrow(() -> new InvalidQrCodeException("The QR code was not found or has already been used."));
+        qrCodeRepository.deactivatedByUuidOrThrow(request.uuid());
+        QrCode usedQrCode = qrCodeRepository.findByUuidOrThrow(request.uuid());
 
         Participant participant = usedQrCode.getParticipant();
         QrCode newQrCode = qrCodeService.issueNewCode(participant);
 
-        return new EntryResponseDto(participant.getFullName(), newQrCode.getUuid());
+        return new EntryResponseDto(participant.getFirstName(), participant.getLastName(), newQrCode.getUuid());
     }
 }

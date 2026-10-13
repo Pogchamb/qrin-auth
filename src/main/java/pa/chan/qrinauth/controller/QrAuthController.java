@@ -11,7 +11,7 @@ import pa.chan.qrinauth.dto.QrCodeRequestDto;
 import pa.chan.qrinauth.service.QrAuthService;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class QrAuthController {
     private final QrAuthService qrAuthService;
 
