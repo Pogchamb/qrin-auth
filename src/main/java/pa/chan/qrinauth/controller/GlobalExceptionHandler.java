@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import pa.chan.qrinauth.dto.ApiErrorDto;
 import pa.chan.qrinauth.exceptions.InvalidQrCodeException;
+import pa.chan.qrinauth.exceptions.ResourceNotFoundException;
 
-import javax.management.relation.RelationNotFoundException;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -21,8 +21,8 @@ public class GlobalExceptionHandler {
                 .body(new ApiErrorDto(HttpStatus.FORBIDDEN.value(), exception.getMessage()));
     }
 
-    @ExceptionHandler(RelationNotFoundException.class)
-    public ResponseEntity<ApiErrorDto> handleNotFound(RelationNotFoundException exception) {
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiErrorDto> handleNotFound(ResourceNotFoundException exception) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ApiErrorDto(HttpStatus.NOT_FOUND.value(), exception.getMessage()));
     }
