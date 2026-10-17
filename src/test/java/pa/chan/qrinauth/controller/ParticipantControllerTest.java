@@ -308,7 +308,6 @@ class ParticipantControllerTest extends BaseIntegrationTest {
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(PARTICIPANTS_URL)
                 .param("page", "200")
                 .param("size", "5");
-        ;
 
         mockMvc.perform(requestBuilder)
                 .andExpectAll(
@@ -332,7 +331,6 @@ class ParticipantControllerTest extends BaseIntegrationTest {
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(PARTICIPANTS_URL)
                 .param("page", "-1")
                 .param("size", "0");
-        ;
 
         mockMvc.perform(requestBuilder)
                 .andExpectAll(
