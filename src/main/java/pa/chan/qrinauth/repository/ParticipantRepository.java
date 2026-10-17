@@ -11,4 +11,5 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
                 .orElseThrow(() -> new ResourceNotFoundException("Participant " + id + " not found"));
     }
 
+    Participant getParticipantsById(Long id);
 }
