@@ -1,14 +1,11 @@
 package pa.chan.qrinauth.controller;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import pa.chan.qrinauth.BaseIntegrationTest;
-import pa.chan.qrinauth.entity.Participant;
-import pa.chan.qrinauth.entity.QrCode;
-import pa.chan.qrinauth.repository.ParticipantRepository;
 import pa.chan.qrinauth.repository.QrCodeRepository;
 
 import java.util.UUID;
@@ -22,21 +19,8 @@ class QrCodeControllerTest extends BaseIntegrationTest {
     @Autowired
     QrCodeRepository qrCodeRepository;
 
-    @Autowired
-    ParticipantRepository participantRepository;
-
-
-    @BeforeEach
-    void setUpForEnderClubTests() {
-        Participant participant = new Participant("Витя", "Мамонтов");
-        QrCode qrCode = new QrCode(TEST_QR_UUID, participant);
-        qrCode.setActive(true);
-        participant.addQrCode(qrCode);
-        participantRepository.saveAndFlush(participant);
-    }
-
-
     @Test
+    @Sql(scripts = "/sql/insertOneParticipantForTest.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void handleDeleteQrCodeReturnNoContent() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders.delete(QR_CODES_URL + "/1");
 
@@ -47,6 +31,7 @@ class QrCodeControllerTest extends BaseIntegrationTest {
     }
 
     @Test
+    @Sql(scripts = "/sql/insertOneParticipantForTest.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void deleteQrCodeWhenCodeDoesNotExistReturnsNotFound() throws Exception {
         Long nonExistentId = 1234L;
         RequestBuilder requestBuilder = MockMvcRequestBuilders.delete(QR_CODES_URL + "/{id}", nonExistentId);
@@ -59,6 +44,7 @@ class QrCodeControllerTest extends BaseIntegrationTest {
     }
 
     @Test
+    @Sql(scripts = "/sql/insertOneParticipantForTest.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void deleteQrCodeWhenCodeIsAlreadyDeletedReturnsNotFound() throws Exception {
         qrCodeRepository.deleteById(1L);
         qrCodeRepository.flush();

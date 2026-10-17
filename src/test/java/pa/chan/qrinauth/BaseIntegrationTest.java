@@ -1,5 +1,6 @@
 package pa.chan.qrinauth;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,7 +39,7 @@ public abstract class BaseIntegrationTest {
     @Autowired
     protected JdbcTemplate jdbcTemplate;
 
-    @BeforeEach
+    @AfterEach
     void cleanDatabase() {
         jdbcTemplate.execute("TRUNCATE TABLE qr_codes, participants RESTART IDENTITY CASCADE");
     }

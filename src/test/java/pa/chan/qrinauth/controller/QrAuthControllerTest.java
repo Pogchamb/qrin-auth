@@ -1,16 +1,14 @@
 package pa.chan.qrinauth.controller;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import pa.chan.qrinauth.BaseIntegrationTest;
 import pa.chan.qrinauth.dto.QrCodeRequestDto;
-import pa.chan.qrinauth.entity.Participant;
 import pa.chan.qrinauth.entity.QrCode;
-import pa.chan.qrinauth.repository.ParticipantRepository;
 import pa.chan.qrinauth.repository.QrCodeRepository;
 
 import java.util.List;
@@ -28,20 +26,9 @@ class QrAuthControllerTest extends BaseIntegrationTest {
     @Autowired
     QrCodeRepository qrCodeRepository;
 
-    @Autowired
-    ParticipantRepository participantRepository;
-
-
-    @BeforeEach
-    void setUpForEnderClubTests() {
-        Participant participant = new Participant("Витя", "Мамонтов");
-        QrCode qrCode = new QrCode(TEST_QR_UUID, participant);
-        qrCode.setActive(true);
-        participant.addQrCode(qrCode);
-        participantRepository.saveAndFlush(participant);
-    }
 
     @Test
+    @Sql(scripts = "/sql/insertOneParticipantForTest.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void handleEnterClubWithValidQrShouldReturnVisitorAndNewQr() throws Exception {
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.post(AUTH_URL)
@@ -70,6 +57,7 @@ class QrAuthControllerTest extends BaseIntegrationTest {
     }
 
     @Test
+    @Sql(scripts = "/sql/insertOneParticipantForTest.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void handleEnterClubWhenQrCodeDoesNotExistThrowsException() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders.post(AUTH_URL)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -89,6 +77,7 @@ class QrAuthControllerTest extends BaseIntegrationTest {
     }
 
     @Test
+    @Sql(scripts = "/sql/insertOneParticipantForTest.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void handleEnterClubWhenRequestIsInvalidReturnsBadRequest() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders.post(AUTH_URL)
                 .contentType(MediaType.APPLICATION_JSON)

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import pa.chan.qrinauth.BaseIntegrationTest;
@@ -14,7 +15,6 @@ import pa.chan.qrinauth.repository.ParticipantRepository;
 import pa.chan.qrinauth.repository.QrCodeRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,8 +33,8 @@ class ParticipantControllerTest extends BaseIntegrationTest {
     // GET /participants/{id}
 
     @Test
+    @Sql(scripts = "/sql/insertOneParticipantForTest.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void handleGetParticipantByIdReturnValidResponseEntity() throws Exception {
-        participantRepository.save(new Participant("Иван", "Петров"));
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(PARTICIPANTS_URL + "/1");
 
         mockMvc.perform(requestBuilder)
@@ -44,16 +44,16 @@ class ParticipantControllerTest extends BaseIntegrationTest {
                         content().json("""
                                 {
                                 "id": 1,
-                                "firstName": "Иван",
-                                "lastName": "Петров"
+                                "firstName": "Витя",
+                                "lastName": "Мамонтов"
                                 }
                                 """)
                 );
     }
 
     @Test
+    @Sql(scripts = "/sql/insertOneParticipantForTest.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void handleGetParticipantByIdShouldReturn404() throws Exception {
-        participantRepository.save(new Participant("Иван", "Петров"));
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(PARTICIPANTS_URL + "/2");
 
         mockMvc.perform(requestBuilder)
@@ -72,8 +72,8 @@ class ParticipantControllerTest extends BaseIntegrationTest {
     // GET /participants
 
     @Test
+    @Sql(scripts = "/sql/insertParticipantsForGetAllTests.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void handleGetParticipantsShouldReturnFirstPagePagedParticipants() throws Exception {
-        setUpForGetAll();
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(PARTICIPANTS_URL)
                 .param("page", "0")
@@ -123,8 +123,8 @@ class ParticipantControllerTest extends BaseIntegrationTest {
     }
 
     @Test
+    @Sql(scripts = "/sql/insertParticipantsForGetAllTests.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void handleGetParticipantsShouldReturnLastPagePagedParticipants() throws Exception {
-        setUpForGetAll();
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(PARTICIPANTS_URL)
                 .param("page", "2")
@@ -164,8 +164,8 @@ class ParticipantControllerTest extends BaseIntegrationTest {
     }
 
     @Test
+    @Sql(scripts = "/sql/insertParticipantsForGetAllTests.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void handleGetParticipantsShouldReturnSecondPagePagedParticipants() throws Exception {
-        setUpForGetAll();
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(PARTICIPANTS_URL)
                 .param("page", "1")
@@ -214,8 +214,8 @@ class ParticipantControllerTest extends BaseIntegrationTest {
     }
 
     @Test
+    @Sql(scripts = "/sql/insertParticipantsForGetAllTests.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void handleGetParticipantsWithOutParamsShouldReturnDefaultPagedParticipants() throws Exception {
-        setUpForGetAll();
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(PARTICIPANTS_URL);
 
@@ -302,8 +302,8 @@ class ParticipantControllerTest extends BaseIntegrationTest {
     }
 
     @Test
+    @Sql(scripts = "/sql/insertParticipantsForGetAllTests.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void handleGetParticipantsWithNotExistPageShouldReturn200AndEmptyContent() throws Exception {
-        setUpForGetAll();
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(PARTICIPANTS_URL)
                 .param("page", "200")
@@ -325,8 +325,8 @@ class ParticipantControllerTest extends BaseIntegrationTest {
     }
 
     @Test
+    @Sql(scripts = "/sql/insertParticipantsForGetAllTests.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void handleGetParticipantsWithNegativePageShouldFallsBackToDefaults() throws Exception {
-        setUpForGetAll();
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(PARTICIPANTS_URL)
                 .param("page", "-1")
@@ -532,9 +532,9 @@ class ParticipantControllerTest extends BaseIntegrationTest {
     //  PUT /participants/{id}
 
     @Test
+    @Sql(scripts = "/sql/insertOneParticipantForTest.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void handleUpdateParticipantShouldReturnValidResponseEntity() throws Exception {
-        Participant participant = participantRepository.save(new Participant("Иван", "Старый"));
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.put(PARTICIPANTS_URL + "/{id}", participant.getId())
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.put(PARTICIPANTS_URL + "/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(new ParticipantRequestDto("Ваня", "Катрич")));
 
@@ -560,8 +560,8 @@ class ParticipantControllerTest extends BaseIntegrationTest {
     }
 
     @Test
+    @Sql(scripts = "/sql/insertOneParticipantForTest.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void handleUpdateParticipantWhenNotFoundShouldReturn404() throws Exception {
-        participantRepository.save(new Participant("Иван", "Старый"));
         RequestBuilder requestBuilder = MockMvcRequestBuilders.put(PARTICIPANTS_URL + "/2")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(new ParticipantRequestDto("Ваня", "Катрич")));
@@ -582,9 +582,9 @@ class ParticipantControllerTest extends BaseIntegrationTest {
     }
 
     @Test
+    @Sql(scripts = "/sql/insertOneParticipantForTest.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void handleUpdateParticipantWithBlankNameShouldReturn400() throws Exception {
-        Participant participant = participantRepository.save(new Participant("Иван", "Старый"));
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.put(PARTICIPANTS_URL + "/{id}", participant.getId())
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.put(PARTICIPANTS_URL + "/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(new ParticipantRequestDto(null, "Катрич")));
 
@@ -605,18 +605,17 @@ class ParticipantControllerTest extends BaseIntegrationTest {
     // DELETE /participants/{id}
 
     @Test
+    @Sql(scripts = "/sql/insertOneParticipantForTest.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void handleDeleteParticipantShouldHideParticipant() throws Exception {
-        Participant participant = participantRepository.save(new Participant("Иван", "Старый"));
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.delete(PARTICIPANTS_URL + "/{id}", participant.getId());
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.delete(PARTICIPANTS_URL + "/1");
 
         mockMvc.perform(requestBuilder)
                 .andExpectAll(
                         status().isNoContent()
                 );
         Boolean isDeleted = jdbcTemplate.queryForObject(
-                "SELECT is_deleted FROM participants WHERE id = ?",
-                Boolean.class,
-                participant.getId()
+                "SELECT is_deleted FROM participants WHERE id = 1",
+                Boolean.class
         );
         assertEquals(true, isDeleted);
     }
@@ -632,8 +631,9 @@ class ParticipantControllerTest extends BaseIntegrationTest {
     }
 
     @Test
+    @Sql(scripts = "/sql/insertOneParticipantForTest.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void handleDeleteParticipantWhenAlreadyDeleted_Returns204() throws Exception {
-        Participant participant = participantRepository.save(new Participant("Иван", "Старый"));
+        Participant participant = participantRepository.findByIdOrThrow(1L);
         LocalDateTime now = LocalDateTime.now();
         participant.setDeleted(true);
         participant.setDeletedAt(now);
@@ -648,14 +648,11 @@ class ParticipantControllerTest extends BaseIntegrationTest {
     // POST /participants/{id}/qr-codes
 
     @Test
+    @Sql(scripts = "/sql/insertOneParticipantForTest.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void handleGenerateQrCodeShouldDeactivateOldAndReturnNewActive() throws Exception {
-        Participant participant = participantRepository.save(new Participant("Иван", "Старый"));
-        UUID oldUUID = UUID.randomUUID();
-        QrCode oldQrCode = new QrCode(oldUUID, participant);
-        oldQrCode.setActive(true);
-        participant.addQrCode(oldQrCode);
-        participant = participantRepository.saveAndFlush(participant);
-
+        Participant participant = participantRepository.findAll().get(0);
+        QrCode oldQrCode = qrCodeRepository.findAll().get(0);
+        UUID oldUUID = oldQrCode.getUuid();
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.post(PARTICIPANTS_URL + "/{id}/qr-codes", participant.getId());
 
@@ -716,12 +713,9 @@ class ParticipantControllerTest extends BaseIntegrationTest {
 
     // GET /participants/{id}/qr-codes
     @Test
+    @Sql(scripts = "/sql/insertOneParticipantForTest.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void handleGetQrCodesShouldReturnResponseEntity() throws Exception {
-        Participant participant = participantRepository.save(new Participant("Иван", "Старый"));
-        QrCode qrCode = new QrCode(UUID.randomUUID(), participant);
-        qrCode.setActive(true);
-        participant.addQrCode(qrCode);
-        participantRepository.saveAndFlush(participant);
+        Participant participant = participantRepository.findAll().get(0);
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(PARTICIPANTS_URL + "/{id}/qr-codes", participant.getId());
 
@@ -756,14 +750,4 @@ class ParticipantControllerTest extends BaseIntegrationTest {
                                 """)
                 );
     }
-
-
-    private void setUpForGetAll() {
-        List<Participant> participants = new ArrayList<>();
-        for (int i = 1; i <= 13; i++) {
-            participants.add(new Participant(("firstName" + i), ("lastName" + i)));
-        }
-        participantRepository.saveAll(participants);
-    }
-
 }
